@@ -228,7 +228,7 @@ void makeList(Vertex* v, int i)
 	/* 리스트 노드 탐색 */
 	p = v;
 	/* 첫 리스트노드가 비어있는경우 == 아직 연결된 노드가 없는 경우 */
-	if (p->list == NULL);
+	if (p == NULL);
 	/* 기존에 연결된 리스트 노드가 있는 경우 */
 	else
 	{
@@ -237,7 +237,7 @@ void makeList(Vertex* v, int i)
 			/* 자기 간선 및 동일 간선의 중복 제외 */
 			if (p->adjNode == i) return;
 			/* 오름차순 삽입 */
-			else if (p->adjNode > i)/* i보다 큰 번호의 리스트 노드 발견시 앞에 리스트노드 삽입 */
+			if (p!=v && p->adjNode > i)/* i보다 큰 번호의 리스트 노드 발견시 앞에 리스트노드 삽입 */
 			{
 				temp->list = p;
 				prev->list = temp;
@@ -246,9 +246,9 @@ void makeList(Vertex* v, int i)
 			/* 다음 리스트 노드 탐색 */
 			prev = p;
 			p = p->list;
-		} while ((p->list != NULL) || (i<p->adjNode));
+		} while (p != NULL);
 	}
-	p->list = temp;/* 리스트노드 삽입 */
+	prev->list = temp;/* 리스트노드 삽입 */
 }
 
 /* 그래프 출력 */
