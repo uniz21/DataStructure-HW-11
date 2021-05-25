@@ -1,17 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* 최대 정점의 수는 10개로 설정 */
 #define MAX_VERTEX_NUM 10
 
+#define TRUE 1
+#define FALSE 0
+
+/* 정점 구조체 */
 typedef struct Vertex {
 	int VertexNum;
 	struct List* list;
+	int visitflag;
 } Vertex;
 
+/* 간선 표현을 위한 리스트 구조체 */
 typedef struct List {
 	int adjNode;
 	struct List* list;
-}List;
+	int visitflag;
+} List;
 
 void InitializeGraph(Vertex**);
 void freeGraph(Vertex**);
@@ -19,15 +27,20 @@ void InsertVertex(Vertex**);
 void InsertEdge(int tail, int head,Vertex**);
 void printGraph(Vertex **);
 void makeList(Vertex* v, int i);
+void DepthFirstSearch(Vertex**, int);
+void BreathFirstSearch(Vertex**, int);
+void InitializeVisitFlag(Vertex** head);
 
 int main(void)
 {
 	char command;
 	int a, b;
-	//Vertex* head = NULL;
+	/* 헤드노드(정점)의 배열 선언 */
 	Vertex* head[MAX_VERTEX_NUM] = {NULL};
 
 	printf("[----- [Yoon Yong Jin] [2016039040] -----]");
+
+	/* 무방향성의 인접그래프로 설정 */
 
 	do {
 		printf("\n\n");
@@ -61,10 +74,14 @@ int main(void)
 			InsertEdge(a, b, &head);
 			break;
 		case 'd': case 'D':
-
+			printf("Enter the number of the vertex to start.\n");
+			scanf("%d", &a);
+			DepthFirstSearch(&head,a);
 			break;
 		case 'b': case 'B':
-
+			printf("Enter the number of the vertex to start.\n");
+			scanf("%d", &a);
+			BreathFirstSearch(&head,a);
 			break;
 		case 'p': case 'P':
 			printGraph(&head);
@@ -79,20 +96,18 @@ int main(void)
 	return 1;
 }
 
+/* 그래프 초기화함수 */
 void InitializeGraph(Vertex** head)
 {
 	if (*head != NULL)
 		freeGraph(head);
 
-	//*head = (Vertex*)malloc(sizeof(Vertex) * MAX_VERTEX_NUM);
-	/*(*head)->VertexNum = -1;
-	(*head)->list = NULL;*/
-
 	for (int i = 0; i < MAX_VERTEX_NUM; i++)
 	{
 		head[i] = (Vertex*)malloc(sizeof(Vertex));
-		head[i]->list = NULL;
 		head[i]->VertexNum = -1;
+		head[i]->list = NULL;
+		head[i]->visitflag = FALSE;
 	}
 }
 
@@ -112,6 +127,7 @@ void InsertVertex(Vertex** head)
 		{
 			head[i]->VertexNum = i;
 			head[i]->list = NULL;
+			head[i]->visitflag = FALSE;
 			break;
 		}
 	}
@@ -129,17 +145,22 @@ void makeList(Vertex* v, int i)
 	List* temp = (List*)malloc(sizeof(List));
 	temp->adjNode = i;
 	temp->list = NULL;
+	temp->visitflag = 0;
 
 	p = v;
 	if (p->list == NULL);
 	else while (p->list != NULL)
 	{
+		/* 자기 간선 및 동일 간선의 중복 제외 */
 		if (p->adjNode == i) return;
+		p->visitflag = FALSE;
 		p = p->list;
 	}
+	/* 자기 간선 및 동일 간선의 중복 제외 */
 	if (p->adjNode == i) return;
 	p->list = temp;
 }
+
 
 void printGraph(Vertex **head)
 {
@@ -148,7 +169,7 @@ void printGraph(Vertex **head)
 	int i = 0;
 
 	p = head[0];
-	while (p->VertexNum != -1 && i < MAX_VERTEX_NUM)
+	while (i < MAX_VERTEX_NUM && p->VertexNum != -1)
 	{
 		printf("헤드노드 [%d]", i);
 		p2 = p->list;
@@ -162,6 +183,33 @@ void printGraph(Vertex **head)
 		i++;
 		p = head[i];
 	}
+}
 
+void DepthFirstSearch(Vertex** head, int i)
+{
+	List* p;
+	head[i]->visitflag = TRUE;
+	printf("%5d", i);
+	for (p = head[i]; p; p = p->list)
+	{
+		if (head[p->adjNode]->visitflag==FALSE)
+			DepthFirstSearch(head, p->adjNode);
+	}
+}
 
+void BreathFirstSearch(Vertex** head, int i)
+{
+
+}
+
+void InitializeVisitFlag(Vertex** head)
+{
+	List* p;
+	for (int i = 0; i < MAX_VERTEX_NUM; i++)
+	{
+		for (p = head[i]; p; p = p->list)
+		{
+
+		}
+	}
 }
